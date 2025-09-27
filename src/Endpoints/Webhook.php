@@ -11,6 +11,17 @@ final class Webhook
     {
     }
 
+    public function getData(bool $verify = true): array
+    {
+        $data = request()->all();
+
+        if ($verify) {
+            $this->verify($data);
+        }
+
+        return $data;
+    }
+
     public function verify(string $payloadJson, string $signature): array
     {
         $data = json_decode($payloadJson, true) ?: [];

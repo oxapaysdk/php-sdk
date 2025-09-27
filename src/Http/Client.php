@@ -61,14 +61,14 @@ final class Client implements ClientInterface
     private function throwForStatus(int $status, string $message, array $data): never
     {
         $ctx = ['status' => $status, 'response' => $data];
+        if ($status === 400) {
+            throw new ValidationRequestException($status, $message, $ctx);
+        }
         if ($status === 401) {
             throw new InvalidApiKeyException($status, $message, $ctx);
         }
         if ($status === 404) {
             throw new NotFoundException($status, $message, $ctx);
-        }
-        if ($status === 422) {
-            throw new ValidationRequestException($status, $message, $ctx);
         }
         if ($status === 429) {
             throw new RateLimitException($status, $message, $ctx);

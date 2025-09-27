@@ -4,6 +4,7 @@ namespace OxaPay\SDK;
 
 use OxaPay\SDK\Contracts\ClientInterface;
 use OxaPay\SDK\Endpoints\Account;
+use OxaPay\SDK\Endpoints\Common;
 use OxaPay\SDK\Endpoints\Exchange;
 use OxaPay\SDK\Endpoints\Payment;
 use OxaPay\SDK\Endpoints\Payout;
@@ -16,7 +17,7 @@ final class OxaPay
         private ClientInterface $client = new Client(),
         private array $keys = [
             'merchants' => ['default' => 'VNX96Y-3HRTMT-SZZH6B-X9MT7W'],
-            'payouts' => ['default' => ''],
+            'payouts' => ['default' => 'SDUD99-D2U9A0-3FLKEA-RKDURA'],
             'general' => ['default' => 'F6SPZF-FSGN7W-TXR4TZ-V80L2Y']
         ],
         private string $callbackUrl = ''
@@ -62,6 +63,17 @@ final class OxaPay
     }
 
     /**
+     * Return a Common endpoint instance.
+     */
+    public function common(?string $apiKey = null): Common
+    {
+        return new Common(
+            $this->client,
+            $this->withApiKey('general', $apiKey)
+        );
+    }
+
+    /**
      * Return an Exchange endpoint instance.
      */
     public function exchange(?string $apiKey = null): Exchange
@@ -79,7 +91,8 @@ final class OxaPay
     {
         return new Payout(
             $this->client,
-            $this->withApiKey('payouts', $apiKey)
+            $this->withApiKey('payouts', $apiKey),
+            $this->callbackUrl
         );
     }
 

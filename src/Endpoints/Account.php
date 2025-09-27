@@ -20,8 +20,4 @@ final class Account
         return $this->client->get('general/account/balance', ['currency' => $currency], $this->headers());
     }
 
-    public function profile(): array
-    {
-        return $this->client->get('merchant/profile', [], $this->headers());
-    }
 }
