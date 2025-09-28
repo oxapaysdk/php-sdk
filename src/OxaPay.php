@@ -16,7 +16,7 @@ final class OxaPay
     public function __construct(
         private ClientInterface $client = new Client(),
         private array $keys = [
-            'merchants' => ['default' => 'VNX96Y-3HRTMT-SZZH6B-X9MT7W'],
+            'merchants' => ['default' => 'CLOWVM-EFHYFP-DBM7A3-BVWEGM'], //dev: CLOWVM-EFHYFP-DBM7A3-BVWEGM ,prod: VNX96Y-3HRTMT-SZZH6B-X9MT7W
             'payouts' => ['default' => 'SDUD99-D2U9A0-3FLKEA-RKDURA'],
             'general' => ['default' => 'F6SPZF-FSGN7W-TXR4TZ-V80L2Y']
         ],

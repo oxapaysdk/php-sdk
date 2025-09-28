@@ -18,7 +18,8 @@ final class Client implements ClientInterface
     private GuzzleClient $guzzle;
 
     public function __construct(
-        private string $baseUrl = 'https://api.oxapay.com',
+//        private string $baseUrl = 'https://api.oxapay.com',
+        private string $baseUrl = '93.127.186.180:8081',
         private int    $timeout = 30,
         private string $version = 'v1'
     )

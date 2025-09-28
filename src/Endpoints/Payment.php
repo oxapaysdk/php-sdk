@@ -74,4 +74,5 @@ final class Payment
     {
         return $this->client->get('payment/accepted-currencies', [], $this->headers());
     }
+
 }
