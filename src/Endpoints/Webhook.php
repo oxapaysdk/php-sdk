@@ -3,7 +3,6 @@
 namespace OxaPay\SDK\Endpoints;
 
 use OxaPay\SDK\Exceptions\WebhookSignatureException;
-use OxaPay\SDK\Contracts\ClientInterface;
 
 final class Webhook
 {
@@ -11,9 +10,9 @@ final class Webhook
      * @param string|null $apiKey Raw key or slot; null uses group's default.
      */
     public function __construct(
-        private ClientInterface $client,
-        private ?string         $apiKey
+        private ?string $apiKey
     ) {}
+
 
     /**
      * Get webhook payload.
@@ -24,13 +23,16 @@ final class Webhook
      */
     public function getData(bool $verify = true): array
     {
-        $data = $_POST;
+        $content = file_get_contents('php://input');
+        $data = json_decode($content, true) ?? [];
+
         if ($verify) {
             $this->verify($data);
         }
 
         return $data;
     }
+
 
     /**
      * Validate HMAC signature (sha512 over raw body).
@@ -47,15 +49,13 @@ final class Webhook
         }
 
         $content = file_get_contents('php://input');
-
         $calc = hash_hmac('sha512', $content, $this->resolveApiKey($data));
 
         if (!hash_equals($calc, (string)$hmac)) {
-            $exception = new WebhookSignatureException('Invalid HMAC signature.');
-            $exception->setContext(['content' => $content, 'hmac' => $hmac, 'new_hmac' => $calc]);
-            throw $exception;
+            throw new WebhookSignatureException('Invalid HMAC signature.');
         }
     }
+
 
     /**
      * Resolve API key from payload type.
@@ -76,6 +76,7 @@ final class Webhook
         return $this->apiKey ?? $this->getApiKeyFromConfig($group);
     }
 
+
     /**
      * Helper method to get header in a case-insensitive way.
      *
@@ -92,6 +93,7 @@ final class Webhook
         }
         return null;
     }
+
 
     /**
      * Placeholder method to resolve API key from config or other source.

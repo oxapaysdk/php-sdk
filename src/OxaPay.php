@@ -101,7 +101,7 @@ final class OxaPay
      */
     public function webhook(?string $apiKey = null): Webhook
     {
-        return new Webhook(new OxaPay, $apiKey);
+        return new Webhook($apiKey);
     }
 
     public function setCallbackUrl(string $url): void
