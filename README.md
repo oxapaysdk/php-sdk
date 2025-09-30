@@ -8,7 +8,7 @@ Official PHP SDK for [OxaPay](https://oxapay.com) — accept crypto payments, ex
 ## Installation
 
 ```bash
-composer require oxapaysdk/php-sdk
+composer require oxapay/php-sdk
 ```
 
 After installing, if you updated autoloaded classes, run:
