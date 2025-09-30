@@ -11,7 +11,7 @@ final class Webhook
      */
     public function __construct(
         private ?string $apiKey
-    ) {}
+    ){}
 
 
     /**

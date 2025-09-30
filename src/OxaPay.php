@@ -16,11 +16,19 @@ final class OxaPay
     public function __construct(
         private ClientInterface $client = new Client(),
         private array $keys = [
-            'merchants' => ['default' => 'CLOWVM-EFHYFP-DBM7A3-BVWEGM'], //dev: CLOWVM-EFHYFP-DBM7A3-BVWEGM ,prod: VNX96Y-3HRTMT-SZZH6B-X9MT7W
-            'payouts' => ['default' => 'SDUD99-D2U9A0-3FLKEA-RKDURA'],
-            'general' => ['default' => 'F6SPZF-FSGN7W-TXR4TZ-V80L2Y']
-        ],
-        private string $callbackUrl = ''
+            'merchants' => [
+                'default' => '',
+                'key_2' => ''
+            ],
+            'payouts' => [
+                'default' =>'',
+                'key_2' => ''
+            ],
+            'general' => [
+                'default' =>'',
+                'key_2' => ''
+            ]
+        ]
     ) {}
 
     public function client(): ClientInterface
@@ -46,8 +54,7 @@ final class OxaPay
     {
         return new Payment(
             $this->client,
-            $this->withApiKey('merchants', $apiKey),
-            $this->callbackUrl
+            $this->withApiKey('merchants', $apiKey)
         );
     }
 
@@ -91,8 +98,7 @@ final class OxaPay
     {
         return new Payout(
             $this->client,
-            $this->withApiKey('payouts', $apiKey),
-            $this->callbackUrl
+            $this->withApiKey('payouts', $apiKey)
         );
     }
 
@@ -104,13 +110,4 @@ final class OxaPay
         return new Webhook($apiKey);
     }
 
-    public function setCallbackUrl(string $url): void
-    {
-        $this->callbackUrl = $url;
-    }
-
-    public function resolveKey(string $group, ?string $apiKey): string
-    {
-        return $this->withApiKey($group, $apiKey);
-    }
 }

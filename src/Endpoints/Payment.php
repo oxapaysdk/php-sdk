@@ -10,9 +10,12 @@ final class Payment
 {
     public function __construct(
         private ClientInterface $client,
-        private ?string         $apiKey,
-        private string          $callbackUrl = ''
-    ) {}
+        private ?string         $apiKey
+    ) {
+        $this->callbackUrl = '';
+    }
+
+    private $callbackUrl;
 
     private function headers(): array
     {
@@ -45,7 +48,7 @@ final class Payment
     public function revokeStaticAddress(string $address = '', string $network = ''): array
     {
         if (!$address && !$network) {
-            throw new MissingAddressException(400,'address must be provided!');
+            throw new MissingAddressException(400, 'address must be provided!');
         }
 
         return $this->client->post('payment/static-address/revoke', ['address' => $address, 'network' => $network], $this->headers());
@@ -59,7 +62,7 @@ final class Payment
     public function information(int|string $trackId): array
     {
         if (!$trackId) {
-            throw new MissingTrackIdException(400,'Track id must be provided');
+            throw new MissingTrackIdException(400, 'Track id must be provided');
         }
 
         return $this->client->get('payment/' . $trackId, [], $this->headers());

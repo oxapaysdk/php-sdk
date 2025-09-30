@@ -10,9 +10,12 @@ final class Payout
 {
     public function __construct(
         private ClientInterface $client,
-        private ?string         $apiKey,
-        private string          $callbackUrl = ''
-    ) {}
+        private ?string         $apiKey
+    ) {
+        $this->callbackUrl = '';
+    }
+
+    private $callbackUrl;
 
     private function headers(): array
     {
@@ -36,7 +39,7 @@ final class Payout
     public function generate(array $data): array
     {
         if (!($data['address'] ?? '')) {
-            throw new MissingAddressException(400,'address must be provided!');
+            throw new MissingAddressException(400, 'address must be provided!');
         }
 
         return $this->client->post('payout', $this->addCallback($data), $this->headers());
