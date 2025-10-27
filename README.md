@@ -143,11 +143,11 @@ All SDK exceptions extend a common base (e.g. `OxaPay\SDK\Exceptions\OxaPayExcep
 - Rotate keys regularly.
 ---
 
-## Security
+### Security
 If you discover a security vulnerability, please email [security@oxapay.com](mailto:security@oxapay.com).  
 Do not disclose publicly until it has been fixed.
 ---
 
-## License & Changelog
+### License & Changelog
 - License: Apache-2.0 (or the license defined in your repository)  
 - See `CHANGELOG.md` for version history.

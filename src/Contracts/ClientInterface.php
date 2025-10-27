@@ -1,6 +1,6 @@
 <?php
 
-namespace OxaPay\SDK\Contracts;
+namespace OxaPay\PHP\Contracts;
 
 interface ClientInterface {
     public function post(string $path, array $payload = [], array $headers = []): array;

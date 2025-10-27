@@ -1,6 +1,6 @@
 <?php
 
-namespace OxaPay\SDK\Exceptions;
+namespace OxaPay\PHP\Exceptions;
 class HttpException extends SdkException
 {
     public function __construct(public int $status, string $message, public array $context = [])

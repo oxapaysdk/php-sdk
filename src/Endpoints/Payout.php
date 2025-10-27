@@ -1,10 +1,10 @@
 <?php
 
-namespace OxaPay\SDK\Endpoints;
+namespace OxaPay\PHP\Endpoints;
 
-use OxaPay\SDK\Contracts\ClientInterface;
-use OxaPay\SDK\Exceptions\MissingAddressException;
-use OxaPay\SDK\Exceptions\MissingTrackIdException;
+use OxaPay\PHP\Contracts\ClientInterface;
+use OxaPay\PHP\Exceptions\MissingAddressException;
+use OxaPay\PHP\Exceptions\MissingTrackIdException;
 
 final class Payout
 {

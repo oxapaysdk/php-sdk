@@ -1,8 +1,8 @@
 <?php
 
-namespace OxaPay\SDK\Endpoints;
+namespace OxaPay\PHP\Endpoints;
 
-use OxaPay\SDK\Contracts\ClientInterface;
+use OxaPay\PHP\Contracts\ClientInterface;
 
 final class Common
 {

@@ -1,26 +1,26 @@
 <?php
 
-namespace OxaPay\SDK\Http;
+namespace OxaPay\PHP\Http;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
-use OxaPay\SDK\Contracts\ClientInterface;
-use OxaPay\SDK\Exceptions\HttpException;
-use OxaPay\SDK\Exceptions\InvalidApiKeyException;
-use OxaPay\SDK\Exceptions\NotFoundException;
-use OxaPay\SDK\Exceptions\RateLimitException;
-use OxaPay\SDK\Exceptions\ServerErrorException;
-use OxaPay\SDK\Exceptions\ValidationRequestException;
+use OxaPay\PHP\Contracts\ClientInterface;
+use OxaPay\PHP\Exceptions\HttpException;
+use OxaPay\PHP\Exceptions\InvalidApiKeyException;
+use OxaPay\PHP\Exceptions\NotFoundException;
+use OxaPay\PHP\Exceptions\RateLimitException;
+use OxaPay\PHP\Exceptions\ServerErrorException;
+use OxaPay\PHP\Exceptions\ValidationRequestException;
 
 final class Client implements ClientInterface
 {
     private GuzzleClient $guzzle;
 
     public function __construct(
-        private string $baseUrl = 'https://api.oxapay.com',
-        private int    $timeout = 30,
-        private string $version = 'v1'
+        private string $baseUrl,
+        private int    $timeout,
+        private string $version
     )
     {
         $this->guzzle = new GuzzleClient([
@@ -41,7 +41,8 @@ final class Client implements ClientInterface
 
     private function send(string $method, string $path, array $options = [], array $headers = []): array
     {
-        $options['headers'] = $headers + ['Accept' => 'application/json'];
+        $options['headers'] = $this->baseHeaders($headers);
+
         try {
             $res = $this->guzzle->request($method, ltrim($path, '/'), $options);
         } catch (ClientException $e) {
@@ -74,6 +75,14 @@ final class Client implements ClientInterface
             throw new RateLimitException($status, $message, $ctx);
         }
         throw new HttpException($status, $message, $ctx);
+    }
+
+    protected function baseHeaders(array $headers = []): array
+    {
+        return array_merge([
+            'Origin' => 'oxa-php-package-v-' . $this->version,
+            'Accept' => 'application/json',
+        ], $headers);
     }
 
 }

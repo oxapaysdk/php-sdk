@@ -1,8 +1,8 @@
 <?php
 
-namespace OxaPay\SDK\Endpoints;
+namespace OxaPay\PHP\Endpoints;
 
-use OxaPay\SDK\Exceptions\WebhookSignatureException;
+use OxaPay\PHP\Exceptions\WebhookSignatureException;
 
 final class Webhook
 {

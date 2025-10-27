@@ -1,111 +1,115 @@
 <?php
 
-namespace OxaPay\SDK;
+namespace OxaPay\PHP;
 
-use OxaPay\SDK\Contracts\ClientInterface;
-use OxaPay\SDK\Endpoints\Account;
-use OxaPay\SDK\Endpoints\Common;
-use OxaPay\SDK\Endpoints\Exchange;
-use OxaPay\SDK\Endpoints\Payment;
-use OxaPay\SDK\Endpoints\Payout;
-use OxaPay\SDK\Endpoints\Webhook;
-use OxaPay\SDK\Http\Client;
+use OxaPay\PHP\Contracts\ClientInterface;
+use OxaPay\PHP\Endpoints\Account;
+use OxaPay\PHP\Endpoints\Common;
+use OxaPay\PHP\Endpoints\Exchange;
+use OxaPay\PHP\Endpoints\Payment;
+use OxaPay\PHP\Endpoints\Payout;
+use OxaPay\PHP\Endpoints\Webhook;
+use OxaPay\PHP\Http\Client;
 
+/**
+ * @method static Payment payment(string $apiKey)
+ * @method static Payout payout(string $apiKey)
+ * @method static Exchange exchange(string $apiKey)
+ * @method static Common common(string $apiKey)
+ * @method static Account account(string $apiKey)
+ * @method static Webhook webhook(string $apiKey)
+ */
 final class OxaPay
 {
-    public function __construct(
-        private ClientInterface $client = new Client(),
-        private array $keys = [
-            'merchants' => [
-                'default' => '',
-                'key_2' => ''
-            ],
-            'payouts' => [
-                'default' =>'',
-                'key_2' => ''
-            ],
-            'general' => [
-                'default' =>'',
-                'key_2' => ''
-            ]
-        ]
-    ) {}
+    private static ?self $oxa;
 
-    public function client(): ClientInterface
+    public const VERSION = '1.0.0';
+    private const BASE_URL = 'https://api.oxapay.com/v1';
+
+    private ClientInterface $client;
+
+    public function __construct(public int $timeout = 20)
     {
-        return $this->client;
+        $this->client = new Client(self::BASE_URL, $timeout, self::VERSION);
+        self::$oxa = $this;
     }
 
-    public function withApiKey(string $group, ?string $rawOrSlot): string
+    public static function __callStatic(string $name, array $arguments)
     {
-        if (!$rawOrSlot) {
-            return (string)($this->keys[$group]['default'] ?? '');
+        self::setOxa();
+
+        return self::$oxa->$name($arguments);
+    }
+
+    /**
+     * @return void
+     */
+    private static function setOxa(): void
+    {
+        if (!isset(self::$oxa)) {
+            new self();
         }
-        if (isset($this->keys[$group][$rawOrSlot])) {
-            return (string)$this->keys[$group][$rawOrSlot];
-        }
-        return $rawOrSlot;
     }
 
     /**
      * Return a Payment endpoint instance.
      */
-    public function payment(?string $apiKey = null): Payment
+    public function payment(string $apiKey): Payment
     {
         return new Payment(
             $this->client,
-            $this->withApiKey('merchants', $apiKey)
+            $apiKey
         );
     }
 
     /**
      * Return an Account endpoint instance.
      */
-    public function account(?string $apiKey = null): Account
+    public function account(string $apiKey): Account
     {
         return new Account(
             $this->client,
-            $this->withApiKey('general', $apiKey)
+            $apiKey
         );
     }
 
     /**
      * Return a Common endpoint instance.
      */
-    public function common(?string $apiKey = null): Common
+    public function common(string $apiKey): Common
     {
         return new Common(
             $this->client,
-            $this->withApiKey('general', $apiKey)
+            $apiKey
         );
     }
 
     /**
      * Return an Exchange endpoint instance.
      */
-    public function exchange(?string $apiKey = null): Exchange
+    public function exchange(string $apiKey): Exchange
     {
         return new Exchange(
             $this->client,
-            $this->withApiKey('general', $apiKey)
+            $apiKey
         );
     }
 
     /**
      * Return a Payout endpoint instance.
      */
-    public function payout(?string $apiKey = null): Payout
+    public function payout(string $apiKey): Payout
     {
         return new Payout(
             $this->client,
-            $this->withApiKey('payouts', $apiKey)
+            $apiKey
         );
     }
 
     /**
      * Return a Webhook endpoint instance.
      */
-    public function webhook(?string $apiKey = null): Webhook
+    public function webhook(string $apiKey): Webhook
     {
         return new Webhook($apiKey);
     }
