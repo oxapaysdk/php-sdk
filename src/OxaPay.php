@@ -19,42 +19,37 @@ use OxaPay\PHP\Http\Client;
  * @method static Account account(string $apiKey)
  * @method static Webhook webhook(string $apiKey)
  */
+
 final class OxaPay
 {
-    private static ?self $oxa;
-
-    public const VERSION = '1.0.0';
+    private const VERSION = '1.0.0';
     private const BASE_URL = 'https://api.oxapay.com/v1';
-
     private ClientInterface $client;
 
     public function __construct(public int $timeout = 20)
     {
         $this->client = new Client(self::BASE_URL, $timeout, self::VERSION);
-        self::$oxa = $this;
     }
 
     public static function __callStatic(string $name, array $arguments)
     {
-        self::setOxa();
-
-        return self::$oxa->$name($arguments);
+        static $instance;
+        $instance ??= new self();
+        return $instance->__call($name, $arguments);
     }
 
-    /**
-     * @return void
-     */
-    private static function setOxa(): void
+    public function __call(string $name, array $arguments)
     {
-        if (!isset(self::$oxa)) {
-            new self();
+        if (method_exists($this, $name)) {
+            return $this->$name(...$arguments);
         }
+        throw new \BadMethodCallException("Method {$name} does not exist.");
     }
 
     /**
      * Return a Payment endpoint instance.
      */
-    public function payment(string $apiKey): Payment
+    protected function payment(string $apiKey): Payment
     {
         return new Payment(
             $this->client,
@@ -65,7 +60,7 @@ final class OxaPay
     /**
      * Return an Account endpoint instance.
      */
-    public function account(string $apiKey): Account
+    protected function account(string $apiKey): Account
     {
         return new Account(
             $this->client,
@@ -76,7 +71,7 @@ final class OxaPay
     /**
      * Return a Common endpoint instance.
      */
-    public function common(string $apiKey): Common
+    protected function common(string $apiKey = null): Common
     {
         return new Common(
             $this->client,
@@ -87,7 +82,7 @@ final class OxaPay
     /**
      * Return an Exchange endpoint instance.
      */
-    public function exchange(string $apiKey): Exchange
+    protected function exchange(string $apiKey): Exchange
     {
         return new Exchange(
             $this->client,
@@ -98,7 +93,7 @@ final class OxaPay
     /**
      * Return a Payout endpoint instance.
      */
-    public function payout(string $apiKey): Payout
+    protected function payout(string $apiKey): Payout
     {
         return new Payout(
             $this->client,
@@ -109,7 +104,7 @@ final class OxaPay
     /**
      * Return a Webhook endpoint instance.
      */
-    public function webhook(string $apiKey): Webhook
+    protected function webhook(string $apiKey): Webhook
     {
         return new Webhook($apiKey);
     }

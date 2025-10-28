@@ -24,7 +24,7 @@ final class Client implements ClientInterface
     )
     {
         $this->guzzle = new GuzzleClient([
-            'base_uri' => rtrim($this->baseUrl, '/') . '/' . trim($this->version, '/') . '/',
+            'base_uri' => rtrim($this->baseUrl, '/') . '/',
             'timeout' => $this->timeout
         ]);
     }
@@ -81,7 +81,7 @@ final class Client implements ClientInterface
     {
         return array_merge([
             'Origin' => 'oxa-php-package-v-' . $this->version,
-            'Accept' => 'application/json',
+            'Accept' => 'application/json'
         ], $headers);
     }
 

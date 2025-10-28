@@ -49,31 +49,11 @@ final class Webhook
         }
 
         $content = file_get_contents('php://input');
-        $calc = hash_hmac('sha512', $content, $this->resolveApiKey($data));
+        $calc = hash_hmac('sha512', $content, $this->apiKey ?? '');
 
         if (!hash_equals($calc, (string)$hmac)) {
             throw new WebhookSignatureException('Invalid HMAC signature.');
         }
-    }
-
-
-    /**
-     * Resolve API key from payload type.
-     *
-     * @param array $data
-     * @return string
-     */
-    protected function resolveApiKey(array $data): string
-    {
-        $type = (string)($data['type'] ?? '');
-
-        $group = match (true) {
-            in_array($type, ['invoice', 'white_label', 'static_address', 'payment_link', 'donation'], true) => 'merchants',
-            $type === 'payout' => 'payouts',
-            default => 'merchants',
-        };
-
-        return $this->apiKey ?? $this->getApiKeyFromConfig($group);
     }
 
 
@@ -94,19 +74,4 @@ final class Webhook
         return null;
     }
 
-
-    /**
-     * Placeholder method to resolve API key from config or other source.
-     *
-     * @param string $group
-     * @return string
-     */
-    protected function getApiKeyFromConfig(string $group): string
-    {
-        $config = [
-            'merchants' => 'CLOWVM-EFHYFP-DBM7A3-BVWEGM',
-            'payouts' => 'SDUD99-D2U9A0-3FLKEA-RKDURA',
-        ];
-        return $config[$group] ?? 'default_api_key';
-    }
 }
