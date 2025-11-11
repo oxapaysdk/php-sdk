@@ -26,8 +26,7 @@ final class OxaPayClient implements OxaPayClientInterface
     )
     {
         $this->client = $httpClient ?? HttpClient::create([
-            'connect_timeout' => 5,
-            'verify_peer'     => true,
+            'verify_peer' => true,
         ]);
     }
 
