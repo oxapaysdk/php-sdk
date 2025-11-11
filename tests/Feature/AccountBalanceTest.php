@@ -1,7 +1,7 @@
 <?php
 namespace Tests;
 
-use OxaPay\PHP\OxaPay;
+use OxaPay\PHP\OxaPayManager;
 use OxaPay\PHP\Contracts\OxaPayClientInterface;
 
 /** @var \PHPUnit\Framework\TestCase $this */
@@ -9,7 +9,7 @@ beforeEach(function () {
     /** @var OxaPayClientInterface|\PHPUnit\Framework\MockObject\MockObject $client */
     $client       = $this->createMock(OxaPayClientInterface::class);
     $this->client = $client;
-    $this->sdk    = new OxaPay(timeout: 20, client: $client);
+    $this->sdk    = new OxaPayManager(timeout: 20, client: $client);
 });
 
 it('returns account balance (no currency filter) with correct shape', function () {

@@ -1,7 +1,7 @@
 <?php
 namespace Tests;
 
-use OxaPay\PHP\OxaPay;
+use OxaPay\PHP\OxaPayManager;
 use OxaPay\PHP\Contracts\OxaPayClientInterface;
 use OxaPay\PHP\Exceptions\ValidationRequestException;
 
@@ -10,7 +10,7 @@ beforeEach(function () {
     /** @var OxaPayClientInterface|\PHPUnit\Framework\MockObject\MockObject $client */
     $client       = $this->createMock(OxaPayClientInterface::class);
     $this->client = $client;
-    $this->sdk    = new OxaPay(timeout: 20, client: $client);
+    $this->sdk    = new OxaPayManager(timeout: 20, client: $client);
 });
 
 it('maps 400 to ValidationRequestException with correct context', function () {

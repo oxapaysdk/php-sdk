@@ -12,15 +12,7 @@ use OxaPay\PHP\Endpoints\Exchange;
 use OxaPay\PHP\Contracts\OxaPayClientInterface;
 use OxaPay\PHP\Exceptions\WebhookNotReceivedException;
 
-/**
- * @method static Payment payment(string $merchantsApiKey, ?string $callbackUrl = null, ?bool $sandbox = null)
- * @method static Payout payout(string $payoutApiKey, ?string $callbackUrl = null)
- * @method static Exchange exchange(string $generalApiKey)
- * @method static Common common(string $generalApiKey)
- * @method static Account account(string $generalApiKey)
- * @method static Webhook webhook(?string $merchantApiKey = null, ?string $payoutApiKey = null)
- */
-final class OxaPay
+final class OxaPayManager
 {
     private const VERSION  = '1.0.0';
     private const BASE_URL = 'https://api.oxapay.com/v1';
@@ -29,22 +21,6 @@ final class OxaPay
     public function __construct(public int $timeout = 20, ?OxaPayClientInterface $client = null)
     {
         $this->client = $client ?? new OxaPayClient(self::BASE_URL, $timeout ?: 20, self::VERSION);
-    }
-
-    public static function __callStatic(string $name, array $arguments): mixed
-    {
-        static $instance;
-        $instance ??= new self();
-
-        return $instance->__call($name, $arguments);
-    }
-
-    public function __call(string $name, array $arguments): mixed
-    {
-        if (method_exists($this, $name)) {
-            return $this->$name(...$arguments);
-        }
-        throw new \BadMethodCallException("Method {$name} does not exist.");
     }
 
     /** Payment APIs.

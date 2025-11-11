@@ -23,10 +23,11 @@ composer dump-autoload -o
 <?php
 require __DIR__ . '/vendor/autoload.php';
 
-use OxaPay\PHP\OxaPay;
+use OxaPay\PHP\OxaPayManager;
+use OxaPay\PHP\Support\Facades\OxaPay;
 
 // via static method
-$oxapay = new OxaPay(timeout: 10);
+$oxapay = new OxaPayManager(timeout: 10);
 $res = $oxapay->payment("XXXXXX-XXXXXX-XXXXXX-XXXXXX")
               ->createInvoice([
                   'amount' => 10.5,
@@ -49,7 +50,7 @@ print_r($res);
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
-use OxaPay\PHP\OxaPay;
+use OxaPay\PHP\Support\Facades\OxaPay;
 use OxaPay\PHP\Exceptions\WebhookSignatureException;
 
 
