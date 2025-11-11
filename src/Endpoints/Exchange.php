@@ -2,12 +2,13 @@
 
 namespace OxaPay\PHP\Endpoints;
 
-use OxaPay\PHP\Contracts\ClientInterface;
+use OxaPay\PHP\Contracts\OxaPayClientInterface;
 
 final class Exchange
 {
-    public function __construct(private ClientInterface $client, private ?string $apiKey)
+    public function __construct(protected OxaPayClientInterface $client, protected string $apiKey)
     {
+        //
     }
 
     private function headers(): array
@@ -16,55 +17,55 @@ final class Exchange
     }
 
     /**
-     * Create a exchange request.
+     * Create a swap request.
      *
      * @param array $data
      * @return array
      */
-    public function request(array $data): array
+    public function swapRequest(array $data): array
     {
         return $this->client->post('general/swap', $data, $this->headers());
     }
 
     /**
-     * Get exchange history.
+     * Get swap history.
      *
      * @param array $filters
      * @return array
      */
-    public function history(array $filters = []): array
+    public function swapHistory(array $filters = []): array
     {
         return $this->client->get('general/swap', $filters, $this->headers());
     }
 
     /**
-     * Get available exchange pairs.
+     * Get available swap pairs.
      *
      * @return array
      */
-    public function pairs(): array
+    public function swapPairs(): array
     {
         return $this->client->get('general/swap/pairs', [], $this->headers());
     }
 
     /**
-     * Pre-calculate exchange.
+     * Pre-calculate swap.
      *
      * @param array $data
      * @return array
      */
-    public function calculate(array $data): array
+    public function swapCalculate(array $data): array
     {
         return $this->client->post('general/swap/calculate', $data, $this->headers());
     }
 
     /**
-     * Get exchange rate.
+     * Get swap rate.
      *
      * @param array $data
      * @return array
      */
-    public function rate(array $data): array
+    public function swapRate(array $data): array
     {
         return $this->client->post('general/swap/rate', $data, $this->headers());
     }

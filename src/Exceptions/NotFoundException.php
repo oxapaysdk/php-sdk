@@ -1,6 +1,7 @@
 <?php
 
 namespace OxaPay\PHP\Exceptions;
-class NotFoundException extends HttpException
+
+class NotFoundException extends OxaPayException
 {
 }

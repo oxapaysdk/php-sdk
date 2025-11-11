@@ -2,6 +2,6 @@
 
 namespace OxaPay\PHP\Exceptions;
 
-class MissingAddressException extends HttpException
+class MissingAddressException extends OxaPayException
 {
 }

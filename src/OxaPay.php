@@ -2,43 +2,44 @@
 
 namespace OxaPay\PHP;
 
-use OxaPay\PHP\Contracts\ClientInterface;
-use OxaPay\PHP\Endpoints\Account;
 use OxaPay\PHP\Endpoints\Common;
-use OxaPay\PHP\Endpoints\Exchange;
-use OxaPay\PHP\Endpoints\Payment;
 use OxaPay\PHP\Endpoints\Payout;
-use OxaPay\PHP\Endpoints\Webhook;
-use OxaPay\PHP\Http\Client;
+use OxaPay\PHP\Services\Webhook;
+use OxaPay\PHP\Endpoints\Account;
+use OxaPay\PHP\Endpoints\Payment;
+use OxaPay\PHP\Http\OxaPayClient;
+use OxaPay\PHP\Endpoints\Exchange;
+use OxaPay\PHP\Contracts\OxaPayClientInterface;
+use OxaPay\PHP\Exceptions\WebhookNotReceivedException;
 
 /**
- * @method static Payment payment(string $apiKey)
- * @method static Payout payout(string $apiKey)
- * @method static Exchange exchange(string $apiKey)
- * @method static Common common(string $apiKey)
- * @method static Account account(string $apiKey)
- * @method static Webhook webhook(string $apiKey)
+ * @method static Payment payment(string $merchantsApiKey, ?string $callbackUrl = null, ?bool $sandbox = null)
+ * @method static Payout payout(string $payoutApiKey, ?string $callbackUrl = null)
+ * @method static Exchange exchange(string $generalApiKey)
+ * @method static Common common(string $generalApiKey)
+ * @method static Account account(string $generalApiKey)
+ * @method static Webhook webhook(?string $merchantApiKey = null, ?string $payoutApiKey = null)
  */
-
 final class OxaPay
 {
-    private const VERSION = '1.0.0';
+    private const VERSION  = '1.0.0';
     private const BASE_URL = 'https://api.oxapay.com/v1';
-    private ClientInterface $client;
+    private OxaPayClientInterface $client;
 
-    public function __construct(public int $timeout = 20)
+    public function __construct(public int $timeout = 20, ?OxaPayClientInterface $client = null)
     {
-        $this->client = new Client(self::BASE_URL, $timeout, self::VERSION);
+        $this->client = $client ?? new OxaPayClient(self::BASE_URL, $timeout ?: 20, self::VERSION);
     }
 
-    public static function __callStatic(string $name, array $arguments)
+    public static function __callStatic(string $name, array $arguments): mixed
     {
         static $instance;
         $instance ??= new self();
+
         return $instance->__call($name, $arguments);
     }
 
-    public function __call(string $name, array $arguments)
+    public function __call(string $name, array $arguments): mixed
     {
         if (method_exists($this, $name)) {
             return $this->$name(...$arguments);
@@ -46,67 +47,70 @@ final class OxaPay
         throw new \BadMethodCallException("Method {$name} does not exist.");
     }
 
-    /**
-     * Return a Payment endpoint instance.
+    /** Payment APIs.
+     *
+     * @param string $merchantsApiKey
+     * @param string|null $callbackUrl
+     * @param bool|null $sandbox
+     * @return Payment
      */
-    protected function payment(string $apiKey): Payment
+    public function payment(string $merchantsApiKey, ?string $callbackUrl = null, ?bool $sandbox = null): Payment
     {
-        return new Payment(
-            $this->client,
-            $apiKey
-        );
+        return new Payment($this->client, $merchantsApiKey, $callbackUrl, $sandbox);
+    }
+
+    /** Payout APIs.
+     *
+     * @param string $payoutApiKey
+     * @param string|null $callbackUrl
+     * @return Payout
+     */
+    public function payout(string $payoutApiKey, ?string $callbackUrl = null): Payout
+    {
+        return new Payout($this->client, $payoutApiKey, $callbackUrl);
+    }
+
+    /** Exchange APIs.
+     *
+     * @param string $generalApiKey
+     * @return Exchange
+     */
+    public function exchange(string $generalApiKey): Exchange
+    {
+        return new Exchange($this->client, $generalApiKey);
+    }
+
+    /** Common APIs.
+     *
+     * @param string $generalApiKey
+     * @return Common
+     */
+    public function common(string $generalApiKey): Common
+    {
+        return new Common($this->client, $generalApiKey);
+    }
+
+    /** Account APIs.
+     *
+     * @param string $generalApiKey
+     * @return Account
+     */
+    public function account(string $generalApiKey): Account
+    {
+        return new Account($this->client, $generalApiKey);
     }
 
     /**
-     * Return an Account endpoint instance.
+     * Webhook handler.
+     *
+     * @param string|null $merchantApiKey
+     * @param string|null $payoutApiKey
+     * @throws WebhookNotReceivedException
+     * @return Webhook
      */
-    protected function account(string $apiKey): Account
+    public function webhook(?string $merchantApiKey = null, ?string $payoutApiKey = null): Webhook
     {
-        return new Account(
-            $this->client,
-            $apiKey
-        );
-    }
-
-    /**
-     * Return a Common endpoint instance.
-     */
-    protected function common(string $apiKey = null): Common
-    {
-        return new Common(
-            $this->client,
-            $apiKey
-        );
-    }
-
-    /**
-     * Return an Exchange endpoint instance.
-     */
-    protected function exchange(string $apiKey): Exchange
-    {
-        return new Exchange(
-            $this->client,
-            $apiKey
-        );
-    }
-
-    /**
-     * Return a Payout endpoint instance.
-     */
-    protected function payout(string $apiKey): Payout
-    {
-        return new Payout(
-            $this->client,
-            $apiKey
-        );
-    }
-
-    /**
-     * Return a Webhook endpoint instance.
-     */
-    protected function webhook(string $apiKey): Webhook
-    {
-        return new Webhook($apiKey);
+        return new Webhook($merchantApiKey, $payoutApiKey);
     }
 
 }

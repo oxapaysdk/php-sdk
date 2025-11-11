@@ -2,6 +2,6 @@
 
 namespace OxaPay\PHP\Exceptions;
 
-class MissingTrackIdException extends HttpException
+class MissingTrackIdException extends OxaPayException
 {
 }

@@ -2,47 +2,39 @@
 
 namespace OxaPay\PHP\Endpoints;
 
-use OxaPay\PHP\Contracts\ClientInterface;
+use OxaPay\PHP\Concerns\CallbackUrlTrait;
+use OxaPay\PHP\Contracts\OxaPayClientInterface;
 use OxaPay\PHP\Exceptions\MissingAddressException;
 use OxaPay\PHP\Exceptions\MissingTrackIdException;
 
 final class Payout
 {
-    public function __construct(
-        private ClientInterface $client,
-        private ?string         $apiKey
-    ) {
-        $this->callbackUrl = '';
-    }
+    use CallbackUrlTrait;
 
-    private $callbackUrl;
+    public function __construct(protected OxaPayClientInterface $client, protected string $apiKey, ?string $callbackUrl = null)
+    {
+        $this->callbackUrl = $callbackUrl ?: '';
+    }
 
     private function headers(): array
     {
         return ['payout_api_key' => $this->apiKey];
     }
 
-    private function addCallback(array $data): array
-    {
-        if (!isset($data['callback_url']) && $this->callbackUrl) {
-            $data['callback_url'] = $this->callbackUrl;
-        }
-        return $data;
-    }
-
     /**
      * Generate a payout request.
      *
      * @param array $data
+     * @param string|null $callbackUrl
      * @return array
      */
-    public function generate(array $data): array
+    public function generate(array $data, ?string $callbackUrl = null): array
     {
         if (!($data['address'] ?? '')) {
-            throw new MissingAddressException(400, 'address must be provided!');
+            throw new MissingAddressException('address must be provided!');
         }
 
-        return $this->client->post('payout', $this->addCallback($data), $this->headers());
+        return $this->client->post('payout', $this->setCallbackUrl($data, $callbackUrl), $this->headers());
     }
 
     /**
@@ -54,7 +46,7 @@ final class Payout
     public function information(int|string $trackId): array
     {
         if (!$trackId) {
-            throw new MissingTrackIdException(400, 'Track id must be provided');
+            throw new MissingTrackIdException('Track id must be provided');
         }
 
         return $this->client->get('payout/' . $trackId, [], $this->headers());

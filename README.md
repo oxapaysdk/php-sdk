@@ -52,17 +52,38 @@ require __DIR__ . '/../vendor/autoload.php';
 use OxaPay\PHP\OxaPay;
 use OxaPay\PHP\Exceptions\WebhookSignatureException;
 
+
+// use for merchant webhook endpoint
 try {
-    $data = OxaPay::webhook("XXXXXX-XXXXXX-XXXXXX-XXXXXX")
-                    ->getData();
+    $data = OxaPay::webhook(merchantApiKey: "XXXXXX-XXXXXX-XXXXXX-XXXXXX")->getData();
     // ...
 } catch (WebhookSignatureException $e) {
     // ...
 }
+
+// use for payout webhook endpoint
+try {
+    $data = OxaPay::webhook(payoutApiKey: "XXXXXX-XXXXXX-XXXXXX-XXXXXX")->getData();
+    // ...
+} catch (WebhookSignatureException $e) {
+    // ...
+}
+
+// Use when your endpoint is used for both webhook merchant and payout
+try {
+    $data = OxaPay::webhook(merchantApiKey: "XXXXXX-XXXXXX-XXXXXX-XXXXXX", payoutApiKey: "XXXXXX-XXXXXX-XXXXXX-XXXXXX")->getData();
+    // ...
+} catch (WebhookSignatureException $e) {
+    // ...
+}
+
+// or you can get data without verify HMAC
+$data = OxaPay::webhook()->getData(false);
 ```
 
+---
 ## Available methods
-### 🔹payment($merchant_api_key)
+### 🔹payment
 - `generateInvoice` – Create invoice & get payment URL. [More details](https://docs.oxapay.com/api-reference/payment/generate-invoice)
 - `generateWhiteLabel` – White-label payment. [More details](https://docs.oxapay.com/api-reference/payment/generate-white-label)
 - `generateStaticAddress` – Create static deposit address. [More details](https://docs.oxapay.com/api-reference/payment/generate-static-address)
@@ -72,51 +93,50 @@ try {
 - `history` – Payment history list. [More details](https://docs.oxapay.com/api-reference/payment/payment-history)
 - `acceptedCurrencies` – Accepted currencies. [More details](https://docs.oxapay.com/api-reference/payment/accepted-currencies)
 
-### 🔹account($general_api_key)
+### 🔹account
 - `balance` – Account balance. [More details](https://docs.oxapay.com/api-reference/common/account-balance)
 
-### 🔹payout($payout_api_key)
+### 🔹payout
 - `generate` – Request payout. [More details](https://docs.oxapay.com/api-reference/payout/generate-payout)
 - `information` – Single payout information. [More details](https://docs.oxapay.com/api-reference/payout/payout-information)
 - `history` – Payout history list. [More details](https://docs.oxapay.com/api-reference/payout/payout-history)
 
-### 🔹exchange($general_api_key)
-- `request` – Exchange request. [More details](https://docs.oxapay.com/api-reference/swap/swap-request)
-- `history` – Exchange history. [More details](https://docs.oxapay.com/api-reference/swap/swap-history)
-- `pairs` – Exchange pairs. [More details](https://docs.oxapay.com/api-reference/swap/swap-pairs)
-- `calculate` – Pre-calc. [More details](https://docs.oxapay.com/api-reference/swap/swap-calculate)
-- `rate` – Quote rate. [More details](https://docs.oxapay.com/api-reference/swap/swap-rate)
+### 🔹swap
+- `swapRequest` – Swap request. [More details](https://docs.oxapay.com/api-reference/swap/swap-request)
+- `swapHistory` – Swap history. [More details](https://docs.oxapay.com/api-reference/swap/swap-history)
+- `swapPairs` – Swap pairs. [More details](https://docs.oxapay.com/api-reference/swap/swap-pairs)
+- `swapCalculate` – Swap pre-calc. [More details](https://docs.oxapay.com/api-reference/swap/swap-calculate)
+- `swapRate` – Swap Quote rate. [More details](https://docs.oxapay.com/api-reference/swap/swap-rate)
 
-### 🔹common()
+### 🔹common
 - `prices` – Market prices. [More details](https://docs.oxapay.com/api-reference/common/prices)
 - `currencies` – Supported crypto. [More details](https://docs.oxapay.com/api-reference/common/supported-currencies)
 - `fiats` – Supported fiats. [More details](https://docs.oxapay.com/api-reference/common/supported-fiat-currencies)
 - `networks` – Supported networks. [More details](https://docs.oxapay.com/api-reference/common/supported-networks)
 - `monitor` – System status. [More details](https://docs.oxapay.com/api-reference/common/system-status)
 
-### 🔹webhook()
+### 🔹webhook
 - `verify` – Validates `HMAC` header (sha512 of raw body).
 - `getData` – Validates `HMAC` header and return webhook data. [More details](https://docs.oxapay.com/webhook)
-  
-- If data type is one of `invoice, white_label, static_address, payment_link, donation` we use the merchant_api_key.
-- If data type is `payout`, we use the payout_api_key.
+
+
 ---
-
 ## Exceptions
-All SDK exceptions extend a common base (e.g. `OxaPay\PHP\Exceptions\OxaPayException`):
-
-- `ValidationRequestException` — HTTP 400
-- `InvalidApiKeyException` — HTTP 401
-- `NotFoundException` — HTTP 404
-- `RateLimitException` — HTTP 429
-- `ServerErrorException` — HTTP 500
-- `ServiceUnavailableException` — HTTP 503
-- `HttpException` — network/unknown
-- `WebhookSignatureException` — missing/invalid HMAC
+All SDK exceptions extend `OxaPay\PHP\Exceptions\OxaPayException`:
+- `ValidationRequestException` (HTTP 400)
+- `InvalidApiKeyException` (HTTP 401)
+- `NotFoundException` (HTTP 404)
+- `RateLimitException` (HTTP 429)
+- `ServerErrorException` (HTTP 500)
+- `ServiceUnavailableException` (HTTP 503)
+- `HttpException` (network/unknown)
 - `MissingApiKeyException` (missing api key)
 - `MissingTrackIdException` (missing track id)
 - `MissingAddressException` (missing address)
----
+- `WebhookSignatureException` (bad/missing HMAC)
+- `WebhookNotReceivedException` (webhook request was not received)
+
+
 
 ### Security Notes
 - Verify webhook HMAC before use input data.
@@ -126,11 +146,54 @@ All SDK exceptions extend a common base (e.g. `OxaPay\PHP\Exceptions\OxaPayExcep
 - Rotate keys regularly.
 ---
 
-### Security
+
+## Testing (safe & offline)
+
+This package uses **Pest**, **PHPUnit**, and **Orchestra Testbench** for testing.  
+Dependencies are already listed under `require-dev` in `composer.json`.
+
+Run tests with composer:
+
+```bash
+composer test
+```
+
+Run tests with pest:
+
+```bash
+vendor/bin/pest
+```
+
+---
+## Compatibility
+
+- PHP +8.x
+
+
+## Security
+
 If you discover a security vulnerability, please email [security@oxapay.com](mailto:security@oxapay.com).  
 Do not disclose publicly until it has been fixed.
----
 
-### License & Changelog
-- License: Apache-2.0 (or the license defined in your repository)  
-- See `CHANGELOG.md` for version history.
+## Contributing
+
+Pull requests are welcome. For major changes, open an issue first.  
+Run coding standards & static analysis before PR:
+
+```bash
+composer cs-fix
+composer phpstan
+composer test
+```
+
+
+## License
+
+Apache-2.0 — see [LICENSE](LICENSE).
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for version history.
+
+---
+OxaPay Made with ♥ for PHP.

@@ -1,3 +1,7 @@
 <?php
+
 namespace OxaPay\PHP\Exceptions;
-class ServerErrorException extends HttpException {}
+
+class ServerErrorException extends OxaPayException
+{
+}

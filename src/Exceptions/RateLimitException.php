@@ -1,3 +1,7 @@
 <?php
+
 namespace OxaPay\PHP\Exceptions;
-class RateLimitException extends HttpException {}
+
+class RateLimitException extends OxaPayException
+{
+}
