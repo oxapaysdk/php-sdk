@@ -102,7 +102,7 @@ $data = OxaPay::webhook()->getData(false);
 - `information` – Single payout information. [More details](https://docs.oxapay.com/api-reference/payout/payout-information)
 - `history` – Payout history list. [More details](https://docs.oxapay.com/api-reference/payout/payout-history)
 
-### 🔹swap
+### 🔹exchange
 - `swapRequest` – Swap request. [More details](https://docs.oxapay.com/api-reference/swap/swap-request)
 - `swapHistory` – Swap history. [More details](https://docs.oxapay.com/api-reference/swap/swap-history)
 - `swapPairs` – Swap pairs. [More details](https://docs.oxapay.com/api-reference/swap/swap-pairs)
