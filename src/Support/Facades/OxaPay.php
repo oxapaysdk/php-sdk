@@ -14,7 +14,7 @@ use OxaPay\PHP\Endpoints\Exchange;
  * @method static Payment payment(string $merchantsApiKey, ?string $callbackUrl = null, ?bool $sandbox = null)
  * @method static Payout payout(string $payoutApiKey, ?string $callbackUrl = null)
  * @method static Exchange exchange(string $generalApiKey)
- * @method static Common common(string $generalApiKey)
+ * @method static Common common()
  * @method static Account account(string $generalApiKey)
  * @method static Webhook webhook(?string $merchantApiKey = null, ?string $payoutApiKey = null)
  */

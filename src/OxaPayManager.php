@@ -58,12 +58,11 @@ final class OxaPayManager
 
     /** Common APIs.
      *
-     * @param string $generalApiKey
      * @return Common
      */
-    public function common(string $generalApiKey): Common
+    public function common(): Common
     {
-        return new Common($this->client, $generalApiKey);
+        return new Common($this->client);
     }
 
     /** Account APIs.

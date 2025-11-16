@@ -6,17 +6,9 @@ use OxaPay\PHP\Contracts\OxaPayClientInterface;
 
 final class Common
 {
-    public function __construct(protected OxaPayClientInterface $client, protected string $apiKey)
+    public function __construct(protected OxaPayClientInterface $client)
     {
         //
-    }
-
-    /**
-     * @return array
-     */
-    protected function headers(): array
-    {
-        return ['general_api_key' => $this->apiKey];
     }
 
     /**
@@ -26,7 +18,7 @@ final class Common
      */
     public function prices(): array
     {
-        return $this->client->get('common/prices', [], $this->headers());
+        return $this->client->get('common/prices');
     }
 
     /**
@@ -36,7 +28,7 @@ final class Common
      */
     public function currencies(): array
     {
-        return $this->client->get('common/currencies', [], $this->headers());
+        return $this->client->get('common/currencies');
     }
 
     /**
@@ -46,7 +38,7 @@ final class Common
      */
     public function fiats(): array
     {
-        return $this->client->get('common/fiats', [], $this->headers());
+        return $this->client->get('common/fiats');
     }
 
     /**
@@ -56,7 +48,7 @@ final class Common
      */
     public function networks(): array
     {
-        return $this->client->get('common/networks', [], $this->headers());
+        return $this->client->get('common/networks');
     }
 
     /**
@@ -66,7 +58,7 @@ final class Common
      */
     public function monitor(): array
     {
-        return $this->client->get('common/monitor', [], $this->headers());
+        return $this->client->get('common/monitor');
     }
 
 }
